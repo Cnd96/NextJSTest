@@ -1,12 +1,18 @@
 "use client";
 import React from "react";
-import GridView from "@/public/images/GridView.svg";
+import { useDispatch } from "react-redux";
+import Man from "@/public/images/Man.svg";
+import Delete from "@/public/images/Delete.svg";
 import IconButton from "../../atoms/iconButton.tsx/iconButton";
 import theme from "@/app/styles/theme";
-
 import useMediaQuery from "@mui/material/useMediaQuery";
+import Link from "next/link";
+
+import { AppDispatch } from "@/app/store";
+import { deleteEmployeeAsync } from "@/app/store/employee.slice";
 
 export interface EmployeeCardProps {
+  id: number;
   name: string;
   email: string;
   phone: string;
@@ -15,12 +21,15 @@ export interface EmployeeCardProps {
 }
 
 const EmployeeCard = ({
+  id,
   name,
   email,
   phone,
   gender,
   imageSrc,
 }: EmployeeCardProps) => {
+  const dispatch = useDispatch<AppDispatch>();
+  
   const smallScreen = useMediaQuery("(max-width:500px)");
   const mediumScreen = useMediaQuery("(max-width:700px)");
   const largeScreen = useMediaQuery("(max-width:900px)");
@@ -53,9 +62,17 @@ const EmployeeCard = ({
           width={"100%"}
           style={{ borderRadius: "5px 5px 0 0" }}
         ></img>
-        <div style={{ padding: "2px 5px", fontSize: "9px", fontWeight: "700" }}>
+        <div
+          style={{
+            padding: "2px 5px",
+            fontSize: "9px",
+            fontWeight: "700",
+          }}
+        >
           <p>{name}</p>
-          <p>{email}</p>
+          <p style={{ textOverflow: "ellipsis", overflow: "hidden" }}>
+            {email}
+          </p>
 
           <div
             style={{
@@ -81,15 +98,16 @@ const EmployeeCard = ({
               }}
             >
               <IconButton
-                src={GridView}
-                background={theme.primaryMain}
-                // onClick={() => console.log("ssssssss")}
+                src={Delete}
+                background={theme.red}
+                onClick={() => dispatch(deleteEmployeeAsync(id))}
               />
-              <IconButton
-                src={GridView}
-                background={theme.primaryMain}
-                // onClick={() => console.log("ssssssss")}
-              />
+              <Link href={`/employee/edit/${id}`}>
+                <IconButton
+                  src={Man}
+                  background={theme.green}
+                />
+              </Link>
             </div>
           </div>
         </div>

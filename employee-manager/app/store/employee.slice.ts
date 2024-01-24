@@ -1,16 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import useApi from "../helpers/apit";
-import { EmployeeListDataResponse } from "../types/employee";
-
-interface Employee {
-  id: string;
-  first_name: string;
-  last_name: string;
-  number: string;
-  email: string;
-  gender: "M" | "F";
-  photo: string;
-}
+import { Employee, EmployeeListDataResponse } from "../types/employee";
+import { PAGE_SIZE } from "../helpers/constants";
 
 const initialState: { employeeList: Employee[] } = {
   employeeList: [],
@@ -35,14 +26,36 @@ const employeeListSlice = createSlice({
         }
       }
     );
+    builder.addCase(
+      deleteEmployeeAsync.fulfilled,
+      (state, action: PayloadAction<EmployeeListDataResponse>) => {
+        if (action.payload.isSuccess) {
+          state.employeeList = action.payload.employees;
+        } else {
+          state.employeeList = [];
+        }
+      }
+    );
   },
 });
 
 export const getEmployeeListAsync = createAsyncThunk(
   "employee/getEmployeeListAsync",
-  async () => {
+  async (page: number) => {
     const response = await useApi().fetch<EmployeeListDataResponse>(
-      "employee/list",
+      `employee/list?pageSize=${PAGE_SIZE}&page=${page}`,
+      "GET"
+    );
+    return response;
+  }
+);
+
+export const deleteEmployeeAsync = createAsyncThunk(
+  "employee/deleteEmployeeAsync",
+  async (id: number) => {
+    await useApi().fetch(`employee/${id}`, "DELETE");
+    const response = await useApi().fetch<EmployeeListDataResponse>(
+      `employee/list?pageSize=${PAGE_SIZE}&page=1`,
       "GET"
     );
     return response;

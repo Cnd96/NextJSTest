@@ -36,18 +36,3 @@ const useApi = (): ApiExecutor => {
 };
 
 export default useApi;
-
-import axios from "axios";
-
-const apiInstance = axios.create({
-  baseURL: `${process.env.NEXT_PUBLIC_API_URL}}`,
-  timeout: 3000,
-  headers: {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "*",
-    "Content-Type": "application/json",
-    Accept: "application/json",
-  },
-});
-
-export { apiInstance };
